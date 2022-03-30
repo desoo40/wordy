@@ -1,9 +1,26 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using Newtonsoft.Json;
 
-var filePath = "mydict.json";
-var jsonText = File.ReadAllText(filePath);
-var dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonText);
+var userName = Login();
+
+string Login()
+{
+    Console.WriteLine("Enter your login:");
+    return Console.ReadLine();
+}
+
+var filePath = $"{userName}.json";
+var dict = new Dictionary<string, string>();
+
+if (File.Exists(filePath))
+{   
+    var jsonText = File.ReadAllText(filePath);
+    dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonText);
+}
+else
+{
+    Console.WriteLine($"You are new user! Welcome {userName}!");
+}
 
 Menu(dict);
 SaveDictToFile(dict);
@@ -28,6 +45,9 @@ void Menu(Dictionary<string, string> dict)
     1 - Add word
     2 - Print dict
     3 - Save to file
+    4 - Delete word
+    5 - Find word
+    6 - Learn words
     0 - Exit");
 
         var ans = Console.ReadLine();
@@ -43,6 +63,15 @@ void Menu(Dictionary<string, string> dict)
             case "3":
                 SaveDictToFile(dict);
                 break;
+            case "4":
+                DeleteWord(dict);
+                break;
+            case "5":
+                FindWord(dict);
+                break;
+            case "6":
+                Learn(dict);
+                break;
             case "0":
                 return;
         }
@@ -50,6 +79,34 @@ void Menu(Dictionary<string, string> dict)
     }
 }
 
+void Learn(Dictionary<string, string> dict)
+{
+}
+
+void FindWord(Dictionary<string, string> dict)
+{
+    Console.WriteLine("Enter word to find:");
+    var findWord = Console.ReadLine();
+    
+    if (dict.ContainsKey(findWord))
+        Console.WriteLine($"{findWord} - {dict[findWord]}");
+    else 
+        Console.WriteLine($"No such word \"{findWord}\" in dictionary!");
+}
+
+void DeleteWord(Dictionary<string, string> dict)
+{
+    Console.WriteLine("Enter word to delete:");
+    var deleteWord = Console.ReadLine();
+    
+    if (dict.ContainsKey(deleteWord))
+    {
+        dict.Remove(deleteWord);
+        Console.WriteLine($"\"{deleteWord}\" was deleted!");
+    }
+    else 
+        Console.WriteLine($"No such word \"{deleteWord}\" in dictionary!");
+}
 void SaveDictToFile(Dictionary<string, string> dict)
 {
     try
