@@ -1,7 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using Newtonsoft.Json;
 
-
 var userName = Login();
 
 string Login()
@@ -26,7 +25,6 @@ if (File.Exists(dictPath))
         dict = new Dictionary<string, string>();
     if (stat == null)
         stat = new Dictionary<string, Stat>();
-        
     UpdateStat();
 }
 else
@@ -85,54 +83,76 @@ void Menu()
 
 void Learn()
 {
+    var exitWord = ":q";
+
     Console.Write("Set rate: ");
     var rate = Convert.ToDecimal(CustomRead());
-    var selectedDict = dict.Where(x => stat[x.Key].LearningRate <= rate);
-
-    var exitWord = ":q";
+    Console.Write("Set limit: ");
+    var lim = Convert.ToInt32(CustomRead());
+    var learningWords = dict.Where(x => stat[x.Key].LearningRate <= rate).Select(x => x.Key).ToList();
+    learningWords = learningWords.GetRange(0, lim > learningWords.Count ? learningWords.Count : lim);
+    var wordsCount = learningWords.Count;
+    var rounds = 1;
+    var exit = false;
     var rand = new Random();
-    var dictCount = selectedDict.Count();
-    var marked = new bool[dictCount];
-    var markedCnt = 0;
-    var goodAns = 0;
+
     Console.WriteLine("========LEARNING========");
-    while(markedCnt != dictCount)
+    while(wordsCount != 0)
     {
-        var randNum = rand.Next(dictCount);
+        Console.WriteLine($"========ROUND #{rounds}========");
+        Console.WriteLine($"====WORDS TO LEARN {wordsCount}====");
 
-        if (marked[randNum])
-            continue;
+        var marked = new bool[wordsCount];
+        var markedCnt = 0;
+        var goodAns = 0;
         
-        marked[randNum] = true;
-        markedCnt++;
+        var wordsToDel = new List<string>();
 
-        var randEl = selectedDict.ElementAt(randNum).Key;
-        Console.Write(randEl + " - ");
-        var ans = CustomRead();
-        if (ans == exitWord)
+        while(markedCnt != wordsCount)
+        {
+            var randNum = rand.Next(wordsCount);
+
+            if (marked[randNum])
+                continue;
+            
+            marked[randNum] = true;
+            markedCnt++;
+
+            var randEl = learningWords.ElementAt(randNum);
+            Console.Write(randEl + " - ");
+            var ans = CustomRead();
+            if (ans == exitWord)
+            {
+                exit = true;
+                break;
+            }
+            if (!stat.ContainsKey(randEl))
+                stat.Add(randEl, new Stat());
+
+            stat[randEl].Asked++;
+
+            if (ans == dict[randEl])
+            {
+                Console.WriteLine("Good!");
+                stat[randEl].TrueAnswers++;
+                goodAns++;
+                wordsToDel.Add(randEl);
+            }
+            else
+            {
+                Console.WriteLine("Wrong!");
+                Console.WriteLine($"{randEl} - {dict[randEl]}");
+            }
+        }
+        learningWords = learningWords.Where(x => !wordsToDel.Contains(x)).ToList();
+        Console.WriteLine($"=========={goodAns} of {wordsCount}===========");
+        wordsCount = learningWords.Count;
+
+        if (exit)
             break;
-
-        if (!stat.ContainsKey(randEl))
-            stat.Add(randEl, new Stat());
-
-        stat[randEl].Asked++;
-
-        if (ans == dict[randEl])
-        {
-            Console.WriteLine("Good!");
-            stat[randEl].TrueAnswers++;
-            goodAns++;
-        }
-        else
-        {
-            Console.WriteLine("Wrong!");
-            Console.WriteLine($"{randEl} - {dict[randEl]}");
-        }
-
     }
-    Console.WriteLine($"=========={goodAns} of {dictCount}===========");
+    
     Console.WriteLine("==========EXIT===========");
-
 }
 
 void UpdateStat()
@@ -219,8 +239,6 @@ void SaveDictToFile(bool log=true)
 void PrintDict()
 {
     Console.WriteLine("-------------------------------");
-    Console.WriteLine($"Dictionary words count = {dict.Count}");
-    Console.WriteLine("-------------------------------");
     
     foreach(var el in dict)
     {
@@ -231,5 +249,7 @@ void PrintDict()
 
     }
 
+    Console.WriteLine("-------------------------------");
+    Console.WriteLine($"Dictionary words count = {dict.Count}");
     Console.WriteLine("-------------------------------");
 }
