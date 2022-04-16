@@ -1,33 +1,43 @@
+using Newtonsoft.Json;
+
 public class Word
 {
     public string EngWord {get; set;}
     public string RusWord {get; set;}
 
-    public int engToRusTimeAsked;
-    public int engToRusCorrectAnswers;
-    public int rusToEngTimeAsked;
-    public int rusToEngCorrectAnswers;
+    public int engToRusAsked = 0;
+    public int engToRusTrueAnswers = 0;
+    public int rusToEngAsked = 0;
+    public int rusToEngTrueAnswers = 0;
 
+    [JsonIgnore]
     public decimal RusToEngLearningRate
     {
-        get => rusToEngTimeAsked == 0 ? 0 : (decimal)rusToEngCorrectAnswers / rusToEngTimeAsked;
+        get => rusToEngAsked == 0 ? 0 : (decimal)rusToEngTrueAnswers / rusToEngAsked;
     }
 
+    [JsonIgnore]
     public decimal EngToRusLearningRate
     {
-        get => engToRusTimeAsked == 0 ? 0 : (decimal)engToRusCorrectAnswers / engToRusTimeAsked;
+        get => engToRusAsked == 0 ? 0 : (decimal)engToRusTrueAnswers / engToRusAsked;
+    }
+
+    [JsonIgnore]
+    public decimal LearnRate
+    {
+        get => (EngToRusLearningRate + RusToEngLearningRate) / 2;
     }
 
     public Word(string en, string ru)
     {
         EngWord = en;
         RusWord = ru;
-        engToRusTimeAsked = 0;
-        rusToEngTimeAsked = 0;
+        engToRusAsked = 0;
+        rusToEngAsked = 0;
     }
 
     public override string ToString()
     {
-        return EngWord + " - " + RusWord;
+        return $"{EngWord} - {RusWord} | Rate = {LearnRate}";
     }
 }
