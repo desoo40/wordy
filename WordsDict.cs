@@ -29,8 +29,8 @@ public class WordsDict
                 Console.WriteLine("Upload ended!");
             }
         }
-
-        Console.WriteLine("No such file!");
+        else
+            Console.WriteLine("No such file!");
     }
 
     public void SaveToFile(string path, bool log = true)
