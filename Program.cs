@@ -26,6 +26,7 @@ void Menu()
     4 - Delete word
     5 - Find word
     6 - Learn words
+    7 - Add word (google)
     0 - Exit");
 
         var ans = Utils.CustomRead();
@@ -50,12 +51,20 @@ void Menu()
             case "6":
                 Learn();
                 break;
+            case "7":
+                AddWordGoogle();
+                break;
             case "0":
                 return;
         }
 
         genDict.SaveToFile(userPath);
     }
+}
+
+void AddWordGoogle()
+{
+    throw new NotImplementedException();
 }
 
 void DeleteWord()
