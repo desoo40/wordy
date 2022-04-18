@@ -167,10 +167,20 @@ void Learn(LangMode mode)
 
                 var randEl = learningWords.ElementAt(randNum);
 
-                if (tmpMode == LangMode.EnToRus)
-                    Console.Write($"[{markedCnt}/{wordsCount}]:\n" + randEl.EngWord + " - ");
-                else
-                    Console.Write($"[{markedCnt}/{wordsCount}]:\n" + randEl.RusWord + " - ");
+                var askWord = randEl.EngWord;
+                var ansWord = randEl.RusWord;
+                var tmpAsked = randEl.engToRusAsked;
+                var tmpTrue = randEl.engToRusTrueAnswers;
+
+                if (tmpMode != LangMode.EnToRus)
+                {
+                    askWord = randEl.RusWord;
+                    ansWord = randEl.EngWord;
+                    tmpAsked = randEl.rusToEngAsked;
+                    tmpTrue = randEl.rusToEngTrueAnswers;
+                }
+
+                Console.Write($"[{markedCnt}/{wordsCount}]:\n" + askWord + " - ");
 
                 var ans = Utils.CustomRead();
                 if (ans == exitWord)
@@ -179,11 +189,9 @@ void Learn(LangMode mode)
                     break;
                 }
 
-                if (tmpMode == LangMode.EnToRus)
-                    randEl.engToRusAsked++;
-                else
-                    randEl.rusToEngAsked++;
+                tmpAsked++;
 
+                //todo fiiiix
                 if (tmpMode == LangMode.EnToRus)
                 {
                     if (ans == randEl.RusWord)
