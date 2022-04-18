@@ -2,8 +2,8 @@ using Newtonsoft.Json;
 
 public class Word
 {
-    public string EngWord {get; set;}
-    public string RusWord {get; set;}
+    public string EngWord { get; set; }
+    public string RusWord { get; set; }
 
     public int engToRusAsked = 0;
     public int engToRusTrueAnswers = 0;
@@ -38,6 +38,12 @@ public class Word
 
     public override string ToString()
     {
-        return $"{EngWord} - {RusWord} | Rate = {LearnRate}";
+        return
+@$"{EngWord} - {RusWord}
+
+Eng to Rus - {engToRusTrueAnswers} of {engToRusAsked} [{string.Format("{0:0.00}", EngToRusLearningRate)}]
+Rus to Eng - {rusToEngTrueAnswers} of {rusToEngAsked} [{string.Format("{0:0.00}", RusToEngLearningRate)}]
+LR - {string.Format("{0:0.00}", LearnRate)}";
+
     }
 }

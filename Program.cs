@@ -25,8 +25,9 @@ void Menu()
     3 - Save to file
     4 - Delete word
     5 - Find word
-    6 - Learn words
-    7 - Add word (google)
+    6 - Learn words (Mixed)
+    7 - Learn words (Rus to Eng)
+    9 - Learn words (Eng to Rus)
     0 - Exit");
 
         var ans = Utils.CustomRead();
@@ -49,10 +50,13 @@ void Menu()
                 FindWord();
                 break;
             case "6":
-                Learn();
+                Learn(LangMode.Mixed);
                 break;
             case "7":
-                AddWordGoogle();
+                Learn(LangMode.RusToEn);
+                break;
+            case "8":
+                Learn(LangMode.EnToRus);
                 break;
             case "0":
                 return;
@@ -60,11 +64,6 @@ void Menu()
 
         genDict.SaveToFile(userPath);
     }
-}
-
-void AddWordGoogle()
-{
-    throw new NotImplementedException();
 }
 
 void DeleteWord()
@@ -122,7 +121,7 @@ void FindWord()
         Console.WriteLine(word);
 }
 
-void Learn()
+void Learn(LangMode mode)
 {
     try
     {
@@ -134,7 +133,7 @@ void Learn()
         Console.Write("Set limit: ");
         var lim = Convert.ToInt32(Utils.CustomRead());
 
-        var learningWords = genDict.GetRandomNElemsUnderRate(lim, rate);
+        var learningWords = genDict.GetRandomNElemsUnderRate(lim, rate, mode);
         var wordsCount = learningWords.Count;
         var rounds = 1;
         var exit = false;
@@ -162,8 +161,17 @@ void Learn()
                 marked[randNum] = true;
                 markedCnt++;
 
+                var tmpMode = LangMode.EnToRus;
+                if (mode == LangMode.Mixed && randNum % 2 == 0)
+                    tmpMode = LangMode.RusToEn;
+
                 var randEl = learningWords.ElementAt(randNum);
-                Console.Write($"[{markedCnt}/{wordsCount}]:\n" + randEl.EngWord + " - ");
+
+                if (tmpMode == LangMode.EnToRus)
+                    Console.Write($"[{markedCnt}/{wordsCount}]:\n" + randEl.EngWord + " - ");
+                else
+                    Console.Write($"[{markedCnt}/{wordsCount}]:\n" + randEl.RusWord + " - ");
+
                 var ans = Utils.CustomRead();
                 if (ans == exitWord)
                 {
@@ -171,20 +179,42 @@ void Learn()
                     break;
                 }
 
-                randEl.engToRusAsked++;
+                if (tmpMode == LangMode.EnToRus)
+                    randEl.engToRusAsked++;
+                else
+                    randEl.rusToEngAsked++;
 
-                if (ans == randEl.RusWord)
+                if (tmpMode == LangMode.EnToRus)
                 {
-                    randEl.engToRusTrueAnswers++;
-                    Console.WriteLine($"Good! [{randEl.engToRusTrueAnswers} of {randEl.engToRusAsked}]");
-                    goodAns++;
-                    wordsToDel.Add(randEl);
+                    if (ans == randEl.RusWord)
+                    {
+                        randEl.engToRusTrueAnswers++;
+                        Console.WriteLine($"Good! [{randEl.engToRusTrueAnswers} of {randEl.engToRusAsked}]");
+                        goodAns++;
+                        wordsToDel.Add(randEl);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Wrong! [{randEl.engToRusTrueAnswers} of {randEl.engToRusAsked}]");
+                        Console.WriteLine($"{randEl.EngWord} - {randEl.RusWord}");
+                    }
                 }
                 else
                 {
-                    Console.WriteLine($"Wrong! [{randEl.engToRusTrueAnswers} of {randEl.engToRusAsked}]");
-                    Console.WriteLine($"{randEl.EngWord} - {randEl.RusWord}");
+                    if (ans == randEl.EngWord)
+                    {
+                        randEl.rusToEngAsked++;
+                        Console.WriteLine($"Good! [{randEl.rusToEngTrueAnswers} of {randEl.rusToEngAsked}]");
+                        goodAns++;
+                        wordsToDel.Add(randEl);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Wrong! [{randEl.rusToEngTrueAnswers} of {randEl.rusToEngAsked}]");
+                        Console.WriteLine($"{randEl.RusWord} - {randEl.EngWord}");
+                    }
                 }
+
             }
             learningWords = learningWords.Where(x => !wordsToDel.Contains(x)).ToList();
             Console.WriteLine($"=========={goodAns} of {wordsCount}===========");

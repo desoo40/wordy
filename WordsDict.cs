@@ -79,9 +79,15 @@ public class WordsDict
         return Words.Remove(word);
     }
 
-    public List<Word> GetRandomNElemsUnderRate(int lim, decimal rate)
+    public List<Word> GetRandomNElemsUnderRate(int lim, decimal rate, LangMode mode = LangMode.Mixed)
     {
-        var subWords = Words.Where(x => x.LearnRate <= rate).ToList();
+        var subWords = mode switch
+        {
+            LangMode.EnToRus => Words.Where(x => x.EngToRusLearningRate <= rate).ToList(),
+            LangMode.RusToEn => Words.Where(x => x.RusToEngLearningRate <= rate).ToList(),
+            _ => Words.Where(x => x.LearnRate <= rate).ToList(),
+        };
+
         var randRange = subWords.Count;
 
         if (lim >= randRange)
@@ -111,7 +117,11 @@ public class WordsDict
         Console.WriteLine("-------------------------------");
 
         foreach (var el in Words)
+        {
+            Console.WriteLine("-------------------------------");
             Console.WriteLine($"{el}");
+            Console.WriteLine("-------------------------------");
+        }
 
         Console.WriteLine("-------------------------------");
         Console.WriteLine($"Dictionary words count = {Count}");
