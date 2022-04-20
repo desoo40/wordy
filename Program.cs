@@ -191,36 +191,32 @@ void Learn(LangMode mode)
 
                 tmpAsked++;
 
-                //todo fiiiix
-                if (tmpMode == LangMode.EnToRus)
+                if (ans == ansWord)
                 {
-                    if (ans == randEl.RusWord)
-                    {
-                        randEl.engToRusTrueAnswers++;
-                        Console.WriteLine($"Good! [{randEl.engToRusTrueAnswers} of {randEl.engToRusAsked}]");
-                        goodAns++;
-                        wordsToDel.Add(randEl);
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Wrong! [{randEl.engToRusTrueAnswers} of {randEl.engToRusAsked}]");
-                        Console.WriteLine($"{randEl.EngWord} - {randEl.RusWord}");
-                    }
+                    tmpTrue++;
+                    Console.WriteLine($"Good! [{tmpTrue} of {tmpAsked}]");
+                    goodAns++;
+                    wordsToDel.Add(randEl);
                 }
                 else
                 {
-                    if (ans == randEl.EngWord)
-                    {
-                        randEl.rusToEngAsked++;
-                        Console.WriteLine($"Good! [{randEl.rusToEngTrueAnswers} of {randEl.rusToEngAsked}]");
-                        goodAns++;
-                        wordsToDel.Add(randEl);
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Wrong! [{randEl.rusToEngTrueAnswers} of {randEl.rusToEngAsked}]");
-                        Console.WriteLine($"{randEl.RusWord} - {randEl.EngWord}");
-                    }
+                    Console.WriteLine($"Wrong! [{tmpTrue} of {tmpAsked}]");
+                    Console.WriteLine($"{askWord} - {ansWord}");
+                }
+
+                if (tmpMode == LangMode.EnToRus)
+                {
+                    randEl.EngWord = askWord;
+                    randEl.RusWord = ansWord;
+                    randEl.engToRusAsked = tmpAsked;
+                    randEl.engToRusTrueAnswers = tmpTrue;
+                }
+                else
+                {
+                    randEl.RusWord = askWord;
+                    randEl.EngWord = ansWord;
+                    randEl.rusToEngAsked = tmpAsked;
+                    randEl.rusToEngTrueAnswers = tmpTrue;
                 }
 
             }
