@@ -27,7 +27,7 @@ void Menu()
     5 - Find word
     6 - Learn words (Mixed)
     7 - Learn words (Rus to Eng)
-    9 - Learn words (Eng to Rus)
+    8 - Learn words (Eng to Rus)
     0 - Exit");
 
         var ans = Utils.CustomRead();
@@ -218,8 +218,8 @@ void Learn(LangMode mode)
                     randEl.rusToEngAsked = tmpAsked;
                     randEl.rusToEngTrueAnswers = tmpTrue;
                 }
-
             }
+
             learningWords = learningWords.Where(x => !wordsToDel.Contains(x)).ToList();
             Console.WriteLine($"=========={goodAns} of {wordsCount}===========");
             wordsCount = learningWords.Count;
