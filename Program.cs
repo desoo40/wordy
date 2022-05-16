@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 
 var userName = Login();
-var userPath = $"{userName}.json";
+var userPath = $"database/{userName}.json";
 var genDict = new WordsDict(userPath);
 
 Menu();
